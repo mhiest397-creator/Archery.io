@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Advanced Archery Game</title>
+<style>
+body{margin:0;overflow:hidden;background:#87CEEB;font-family:Arial,sans-serif;}
+canvas{display:block;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.5);border:4px solid #ffffff;}
+#ui{position:absolute;top:10px;left:10px;font-size:22px;font-weight:bold;color:white;text-shadow:2px 2px 4px black;}
+#gameOver{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;display:none;background:rgba(0,0,0,.8);padding:20px;border-radius:12px;color:white;}
+button{padding:10px 20px;font-size:18px;}
+</style>
+</head>
+<body>
+
+<div id="ui">
+Score: <span id="score">0</span> |
+Level: <span id="level">1</span> |
+High: <span id="high">0</span> | Coins: <span id="coins">0</span> | Achievements: <span id="ach">0</span> | <button onclick="toggleShop()">🛒</button> |
+Misses: <span id="misses">0</span>/5 | Hits: <span id="hitsLevel">0</span>/<span id="hitsNeed">2</span> <button onclick="togglePause()">⚙️</button>
+</div>
+
+<div id="gameOver">
+<h1>Game Over</h1>
+<button onclick="restart()">Restart</button><h3 style='color:white;margin-top:20px;'>Levels Preview (1 - 50)</h3>
+<div id="levelPreview" style="margin-top:20px;max-width:900px;display:grid;grid-template-columns:repeat(10,1fr);gap:8px;">
+<div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl1">1</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl2">2</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl3">3</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl4">4</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl5">5</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl6">6</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl7">7</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl8">8</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl9">9</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl10">10</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl11">11</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl12">12</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl13">13</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl14">14</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl15">15</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl16">16</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl17">17</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl18">18</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl19">19</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl20">20</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl21">21</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl22">22</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl23">23</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl24">24</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl25">25</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl26">26</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl27">27</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl28">28</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl29">29</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl30">30</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl31">31</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl32">32</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl33">33</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl34">34</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl35">35</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl36">36</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl37">37</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl38">38</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl39">39</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl40">40</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl41">41</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl42">42</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl43">43</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl44">44</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl45">45</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl46">46</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl47">47</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl48">48</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl49">49</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">50
+<h3 style='color:white;margin-top:20px;'>Rewards</h3>
+<div style='display:flex;gap:12px;flex-wrap:wrap;justify-content:center;color:white'>
+<div>🥉 Level 10: Bronze Archer</div>
+<div>🥈 Level 20: Silver Archer</div>
+<div>🥇 Level 30: Gold Archer</div>
+<div>💎 Level 40: Diamond Archer</div>
+<div>👑 Level 50: Archery King</div>
+</div>
+
+<div style='margin-top:15px;color:white;font-size:18px'>
+<b>Level Goals:</b><br>
+Every level requires <b>5 successful hits</b> to advance.<br>
+Reach Level 50 and score 250+ hits to win.
+</div>
+</div></div></div>
+
+
+<div id="startScreen" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(#4fc3ff,#7bdc6f);z-index:1000;">
+<h1 style="font-size:64px;color:white;text-shadow:3px 3px 6px black;">🏹 ARCHERY DELUXE</h1>
+<p style="font-size:24px;color:white;">Become the ultimate archer and reach Level 50!</p>
+<button onclick="startGame()" style="font-size:28px;padding:15px 40px;">START GAME</button><h3 style='color:white;margin-top:20px;'>Levels Preview (1 - 50)</h3>
+<div id="levelPreview" style="margin-top:20px;max-width:900px;display:grid;grid-template-columns:repeat(10,1fr);gap:8px;">
+<div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">1</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">2</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">3</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">4</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">5</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">6</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">7</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">8</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">9</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">10</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">11</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">12</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">13</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">14</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">15</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">16</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">17</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">18</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">19</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">20</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">21</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">22</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">23</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">24</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">25</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">26</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">27</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">28</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">29</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">30</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">31</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">32</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">33</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">34</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">35</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">36</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">37</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">38</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">39</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">40</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">41</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">42</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">43</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">44</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">45</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">46</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">47</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">48</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;">49</div><div style="background:rgba(255,255,255,0.85);padding:8px;border-radius:6px;font-weight:bold;" id="lvl50">50</div></div></div>
+
+<div id="pauseMenu" style="display:none;position:absolute;top:80px;right:20px;background:rgba(0,0,0,0.85);padding:15px;border-radius:10px;z-index:999;">
+<button onclick="togglePause()">▶ Resume</button><br><br>
+<button onclick="resetGame()">🔄 Reset Game</button><br><br>
+<button onclick="goToMenu()">🏠 Main Menu</button>
+</div>
+
+<div id="levelComplete" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.75);z-index:1500;justify-content:center;align-items:center;flex-direction:column;color:white;">
+<h1>🎉 Level Complete! 🎉</h1><h2 id='rewardText'>+10 Coins Earned</h2>
+<p>You reached the required hits.</p>
+<button onclick="nextLevelContinue()" style="font-size:24px;padding:12px 30px;">Next Level ➜</button>
+</div>
+
+<div id="shopMenu" style="display:none;position:absolute;top:120px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);padding:20px;border-radius:12px;color:white;z-index:2000;">
+<h2>🏹 Bow Shop</h2>
+<h3>Special Arrows</h3>
+<button onclick="arrowType='fire'">🔥 Fire</button>
+<button onclick="arrowType='ice'">❄️ Ice</button>
+<button onclick="arrowType='lightning'">⚡ Lightning</button>
+
+<button onclick="buyBow(100,'Bronze Bow')">Bronze Bow (100)</button><br><br>
+<button onclick="buyBow(250,'Silver Bow')">Silver Bow (250)</button><br><br>
+<button onclick="buyBow(500,'Gold Bow')">Gold Bow (500)</button><br><br>
+<button onclick="buyBow(1000,'Diamond Bow')">Diamond Bow (1000)</button><br><br>
+<button onclick="toggleShop()">Close</button>
+</div>
+<canvas id="canvas" width="1200" height="650"></canvas>
+
+
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let score=0,level=1,misses=0,coins=0;
+let bowPower=18; let currentBow='Wooden Bow';
+let achievements=0; let bossLevel=false;
+let arrowType='normal';
+
+let levelHits=0;
+let hitsNeeded=2;
+let highScore=parseInt(localStorage.getItem("archeryHigh"))||0;
+document.getElementById("high").textContent=highScore;
+
+const player={x:120,y:canvas.height-180};
+let aimAngle=0;
+let gameEnded=false;
+let gameStarted=false;
+let armAnimation=0;
+let gamePaused=false; let levelCompletePending=false;
+
+const arrows=[],particles=[],trails=[];
+
+const target={x:1000,y:200,radius:40,speed:3,dir:1};
+
+
+const scenery={flowers:[],rocks:[]};
+for(let i=0;i<250;i++){
+ scenery.flowers.push({x:Math.random()*1200,y:520+Math.random()*120,c:i%2?"#ffd93d":"#ffffff"});
+}
+for(let i=0;i<35;i++){
+ scenery.rocks.push({x:Math.random()*1200,y:530+Math.random()*110,r:4+Math.random()*10});
+}
+
+const clouds=[];
+for(let i=0;i<8;i++){
+ clouds.push({x:Math.random()*1200,y:40+Math.random()*160,speed:0.3+Math.random()});
+}
+
+class Arrow{
+ constructor(angle){
+  const power=bowPower;
+  this.x=player.x;
+  this.y=player.y;
+  this.vx=Math.cos(angle)*power;
+  this.vy=Math.sin(angle)*power;
+  this.gravity=.35;
+  this.active=true;
+ }
+ update(){
+  this.x+=this.vx;
+  this.y+=this.vy;
+  trails.push({x:this.x,y:this.y,life:15});
+  this.vy+=this.gravity;
+  if(this.x>canvas.width||this.y>canvas.height||this.y<0){
+   this.active=false;
+   misses++;
+  }
+ }
+ draw(){
+  const a=Math.atan2(this.vy,this.vx);
+  ctx.save();
+  ctx.translate(this.x,this.y);
+  ctx.rotate(a);
+
+  ctx.strokeStyle="#6b3f1f";
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(-20,0);
+  ctx.lineTo(20,0);
+  ctx.stroke();
+
+  ctx.fillStyle="silver";
+  ctx.beginPath();
+  ctx.moveTo(25,0);
+  ctx.lineTo(15,-5);
+  ctx.lineTo(15,5);
+  ctx.fill();
+
+  ctx.fillStyle="red";
+  ctx.beginPath();
+  ctx.moveTo(-20,0);
+  ctx.lineTo(-30,-5);
+  ctx.lineTo(-24,0);
+  ctx.fill();
+
+  // Special arrow effects
+  if(arrowType==='fire'){
+    ctx.strokeStyle='orange';
+    ctx.lineWidth=4;
+    ctx.beginPath();
+    ctx.moveTo(-10,0);
+    ctx.lineTo(20,0);
+    ctx.stroke();
+  }
+
+  if(arrowType==='ice'){
+    ctx.strokeStyle='#7de3ff';
+    ctx.lineWidth=4;
+    ctx.beginPath();
+    ctx.moveTo(-10,0);
+    ctx.lineTo(20,0);
+    ctx.stroke();
+  }
+
+  if(arrowType==='lightning'){
+    ctx.strokeStyle='yellow';
+    ctx.lineWidth=3;
+    ctx.shadowColor='yellow';
+    ctx.shadowBlur=15;
+    ctx.beginPath();
+    ctx.moveTo(-5,-8);
+    ctx.lineTo(5,-2);
+    ctx.lineTo(0,4);
+    ctx.lineTo(10,8);
+    ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+
+  ctx.restore();
+ }
+}
+
+class Particle{
+ constructor(x,y){
+  this.x=x; this.y=y;
+  this.vx=Math.random()*8-4;
+  this.vy=Math.random()*8-4;
+  this.life=40;
+  this.color='orange';
+ }
+ update(){this.x+=this.vx;this.y+=this.vy;this.life--;}
+ draw(){
+  ctx.fillStyle=this.color || "orange";
+  ctx.beginPath();
+  ctx.arc(this.x,this.y,3,0,Math.PI*2);
+  ctx.fill();
+ }
+}
+
+function spawnParticles(x,y){
+ for(let i=0;i<30;i++){
+   let p=new Particle(x,y);
+   if(arrowType==='fire') p.color='orange';
+   if(arrowType==='ice') p.color='#7de3ff';
+   if(arrowType==='lightning') p.color='yellow';
+   particles.push(p);
+ }
+}
+
+canvas.addEventListener("mousemove",e=>{
+ const r=canvas.getBoundingClientRect();
+ aimAngle=Math.atan2(e.clientY-r.top-player.y,e.clientX-r.left-player.x);
+});
+
+canvas.addEventListener("click",()=>{
+ if(!gameEnded){
+   arrows.push(new Arrow(aimAngle));
+   armAnimation=12;
+ }
+});
+
+
+function drawBackground(){
+ // Sky
+ let sky=ctx.createLinearGradient(0,0,0,650);
+ sky.addColorStop(0,"#1b5faa");
+ sky.addColorStop(.5,"#4ea3ff");
+ sky.addColorStop(1,"#b8f0ff");
+ ctx.fillStyle=sky;
+ ctx.fillRect(0,0,1200,650);
+
+ // Distant mountains
+ const mountains=[
+ [0,340,180,220,360,340],[220,340,470,150,720,340],
+ [600,340,850,180,1080,340],[900,340,1120,200,1250,340]
+ ];
+ ctx.fillStyle="#6c7785";
+ mountains.forEach(m=>{
+  ctx.beginPath();
+  ctx.moveTo(m[0],m[1]);ctx.lineTo(m[2],m[3]);ctx.lineTo(m[4],m[5]);ctx.fill();
+ });
+
+ // Snow caps
+ ctx.fillStyle="white";
+ [[180,220],[470,150],[850,180],[1120,200]].forEach(p=>{
+   ctx.beginPath();
+   ctx.moveTo(p[0]-40,p[1]+40);
+   ctx.lineTo(p[0],p[1]);
+   ctx.lineTo(p[0]+40,p[1]+40);
+   ctx.fill();
+ });
+
+ // Forest
+ for(let x=0;x<1200;x+=18){
+   let h=60+Math.sin(x*.05)*20+Math.random()*15;
+   ctx.fillStyle="#163f20";
+   ctx.beginPath();
+   ctx.moveTo(x,420);
+   ctx.lineTo(x+10,420-h);
+   ctx.lineTo(x+20,420);
+   ctx.fill();
+ }
+
+ // Lake
+ let lake=ctx.createLinearGradient(0,430,0,560);
+ lake.addColorStop(0,"#6ed0ff");
+ lake.addColorStop(1,"#1c6f9b");
+ ctx.fillStyle=lake;
+ ctx.beginPath();
+ ctx.ellipse(620,470,280,55,0,0,Math.PI*2);
+ ctx.fill();
+
+ // Meadow
+ let grass=ctx.createLinearGradient(0,500,0,650);
+ grass.addColorStop(0,"#6dbb55");
+ grass.addColorStop(1,"#2f7c2f");
+ ctx.fillStyle=grass;
+ ctx.fillRect(0,500,1200,150);
+
+ // Flowers (static)
+ scenery.flowers.forEach(f=>{
+   ctx.fillStyle=f.c;
+   ctx.fillRect(f.x,f.y,2,2);
+ });
+
+ // Rocks (static)
+ ctx.fillStyle="#8a8a8a";
+ scenery.rocks.forEach(r=>{
+   ctx.beginPath();
+   ctx.arc(r.x,r.y,r.r,0,Math.PI*2);
+   ctx.fill();
+ });
+}
+
+
+function drawClouds(){
+ ctx.fillStyle="rgba(255,255,255,.9)";
+ clouds.forEach(c=>{
+  c.x+=c.speed;
+  if(c.x>1300)c.x=-100;
+  ctx.beginPath();
+  ctx.arc(c.x,c.y,25,0,Math.PI*2);
+  ctx.arc(c.x+25,c.y-10,30,0,Math.PI*2);
+  ctx.arc(c.x+55,c.y,25,0,Math.PI*2);
+  ctx.fill();
+ });
+}
+
+function drawPlayer(){
+
+ // legs
+ ctx.strokeStyle="#222";
+ ctx.lineWidth=5;
+ ctx.beginPath();
+ ctx.moveTo(player.x,player.y+50);
+ ctx.lineTo(player.x-15,player.y+90);
+ ctx.moveTo(player.x,player.y+50);
+ ctx.lineTo(player.x+15,player.y+90);
+ ctx.stroke();
+
+ // body
+ ctx.strokeStyle="#1e4fa1";
+ ctx.lineWidth=8;
+ ctx.beginPath();
+ ctx.moveTo(player.x,player.y-20);
+ ctx.lineTo(player.x,player.y+50);
+ ctx.stroke();
+
+ // head
+ ctx.fillStyle="#f1c27d";
+ ctx.beginPath();
+ ctx.arc(player.x,player.y-45,18,0,Math.PI*2);
+ ctx.fill();
+
+ // left arm pulling bow string
+ ctx.strokeStyle="#f1c27d";
+ ctx.lineWidth=5;
+ ctx.beginPath();
+ ctx.moveTo(player.x,player.y-5);
+ ctx.lineTo(player.x+15-armAnimation,player.y-10-armAnimation*0.4);
+ ctx.stroke();
+
+ // right arm holding bow
+ ctx.beginPath();
+ ctx.moveTo(player.x,player.y-5);
+ ctx.lineTo(player.x+40,player.y);
+ ctx.stroke();
+
+ // second forearm to bow grip
+ ctx.beginPath();
+ ctx.moveTo(player.x+40,player.y);
+ ctx.lineTo(player.x+25,player.y-10);
+ ctx.stroke();
+
+ // bow
+ ctx.strokeStyle="#6b3f1f";
+ ctx.lineWidth=6;
+ ctx.beginPath();
+ ctx.arc(player.x+40,player.y,55,-Math.PI/2,Math.PI/2);
+ ctx.stroke();
+
+ // string
+ ctx.strokeStyle="#eee";
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ ctx.moveTo(player.x+40,player.y-55);
+ ctx.lineTo(player.x+40,player.y+55);
+ ctx.stroke();
+
+ // arrow in hand
+ ctx.save();
+ ctx.translate(player.x+20,player.y);
+ ctx.rotate(aimAngle);
+
+ ctx.strokeStyle="#5b3a1f";
+ ctx.lineWidth=3;
+ ctx.beginPath();
+ ctx.moveTo(-10,0);
+ ctx.lineTo(50,0);
+ ctx.stroke();
+
+ ctx.fillStyle='silver';
+ ctx.beginPath();
+ ctx.moveTo(55,0);
+ ctx.lineTo(45,-5);
+ ctx.lineTo(45,5);
+ ctx.fill();
+
+ ctx.restore();
+}
+
+function drawTarget(){
+ const colors=["red","white","blue","yellow","red"];
+ for(let i=5;i>0;i--){
+  ctx.fillStyle=colors[5-i];
+  ctx.beginPath();
+  ctx.arc(target.x,target.y,target.radius*(i/5),0,Math.PI*2);
+  ctx.fill();
+ }
+}
+
+
+function levelUp(){
+ bossLevel=(level+1)%10===0;
+
+ if(level>=50){
+   gameEnded=true;
+   document.getElementById("gameOver").style.display="block";
+   document.getElementById("gameOver").innerHTML='<h1>🏆 YOU WON!</h1><button onclick="restart()">Play Again</button>';
+   return;
+ }
+ level++;
+ score=0;
+ misses=0;
+ levelHits=0;
+ hitsNeeded++;
+ target.speed=Math.min(20,target.speed+0.4);
+ target.radius=Math.max(10,target.radius-0.5);
+if(bossLevel){
+ target.radius+=20;
+ target.speed+=2;
+ setTimeout(()=>alert('👹 BOSS LEVEL! Defeat the giant target!'),100);
+}
+if(level===10||level===25||level===50){
+ achievements++;
+ const a=document.getElementById('ach');
+ if(a) a.textContent=achievements;
+}
+ document.getElementById("level").textContent=level;
+
+ const rewards={10:"🥉 Bronze Archer",20:"🥈 Silver Archer",30:"🥇 Gold Archer",40:"💎 Diamond Archer",50:"👑 Archery King"};
+ if(rewards[level]) alert("Reward Unlocked: "+rewards[level]);
+}
+
+function update(){
+ if(armAnimation>0) armAnimation-=0.6;
+ target.y+=target.speed*target.dir;
+ if(target.y<80||target.y>canvas.height-150) target.dir*=-1;
+
+ arrows.forEach(a=>{
+  a.update();
+  let dx=a.x-target.x;
+  let dy=a.y-target.y;
+  let d=Math.sqrt(dx*dx+dy*dy);
+  if(d<target.radius){
+   a.active=false;
+   score++;
+   levelHits++;
+   if(levelHits>=hitsNeeded && !levelCompletePending){
+ levelCompletePending=true;
+ gamePaused=true;
+ coins += level*10;
+document.getElementById('coins').textContent=coins;
+saveGame();
+document.getElementById('rewardText').textContent='+'+(level*10)+' Coins Earned';
+launchFireworks();
+document.getElementById('levelComplete').style.display='flex';
+ spawnParticles(target.x,target.y);
+}
+   spawnParticles(target.x,target.y);
+   target.y=100+Math.random()*(canvas.height-250);
+  }
+ });
+
+ for(let i=arrows.length-1;i>=0;i--) if(!arrows[i].active) arrows.splice(i,1);
+ for(let i=particles.length-1;i>=0;i--){particles[i].update(); if(particles[i].life<=0) particles.splice(i,1);}
+for(let i=trails.length-1;i>=0;i--){trails[i].life--; if(trails[i].life<=0) trails.splice(i,1);}
+
+ if(score>highScore){
+  highScore=score;
+  localStorage.setItem("archeryHigh",highScore);
+ }
+
+ if(level===50 && score>=250){
+  gameEnded=true;
+  document.getElementById("gameOver").style.display="block";
+  document.getElementById("gameOver").innerHTML='<h1>🏆 YOU WON!</h1><button onclick="restart()">Play Again</button>';
+ }
+
+ if(misses>=5){
+  gameEnded=true;
+  document.getElementById("gameOver").style.display="block";
+ }
+
+ scoreEl.textContent=score;
+ high.textContent=highScore;
+ missesEl.textContent=misses;
+document.getElementById("hitsLevel").textContent=levelHits;
+document.getElementById("hitsNeed").textContent=hitsNeeded;
+updateLevelPreview();
+}
+
+const scoreEl=document.getElementById("score");
+const missesEl=document.getElementById("misses");
+const high=document.getElementById("high");
+
+function restart(){
+ score=0;level=1;misses=0;levelHits=0;hitsNeeded=2;
+ arrows.length=0;particles.length=0;
+ target.speed=3;target.radius=40;
+ gameEnded=false;
+ document.getElementById("level").textContent=1;
+ document.getElementById("gameOver").style.display="none";
+ document.getElementById("gameOver").innerHTML='<h1>Game Over</h1><button onclick="restart()">Restart</button>';
+}
+
+
+function drawTrails(){
+ trails.forEach(t=>{
+   ctx.globalAlpha=t.life/15;
+   ctx.beginPath();
+   ctx.arc(t.x,t.y,3,0,Math.PI*2);
+   ctx.fillStyle='gold';
+   ctx.fill();
+   ctx.globalAlpha=1;
+ });
+}
+
+
+function drawWeather(){
+ const mode=(level%3);
+ if(mode===1){ // rain removed
+   // Rain effect disabled
+ }
+ if(mode===2){ // snow
+   for(let i=0;i<80;i++){
+     const x=(i*29)%1200;
+     const y=(performance.now()/20+i*15)%650;
+     ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+   }
+ }
+}
+
+function draw(){
+
+ drawBackground();
+ drawClouds();
+ drawPlayer();
+ drawTarget(); drawTrails();
+ arrows.forEach(a=>a.draw());
+ particles.forEach(p=>p.draw()); drawWeather();
+}
+
+
+function startGame(){
+ document.getElementById('startScreen').style.display='none';
+ gameStarted=true;
+}
+
+
+function updateLevelPreview(){
+ for(let i=1;i<=50;i++){
+   const box=document.getElementById('lvl'+i);
+   if(!box) continue;
+
+   if(i<level){
+      box.style.background='#34c759';
+      box.style.color='white';
+   }else if(i===level){
+      box.style.background='#ffd60a';
+      box.style.color='black';
+   }else{
+      box.style.background='rgba(255,255,255,0.85)';
+      box.style.color='black';
+   }
+ }
+}
+
+
+
+
+
+function launchFireworks(){
+ for(let i=0;i<120;i++){
+   particles.push(new Particle(600,180));
+ }
+}
+function nextLevelContinue(){
+
+ document.getElementById('levelComplete').style.display='none';
+ gamePaused=false;
+ levelCompletePending=false;
+ levelUp();
+}
+
+
+
+function saveGame(){
+ localStorage.setItem('archerySave',JSON.stringify({
+  level,coins,bowPower,currentBow,achievements
+ }));
+}
+function loadGame(){
+ const s=localStorage.getItem('archerySave');
+ if(!s) return;
+ try{
+  const d=JSON.parse(s);
+  level=d.level||1;
+  coins=d.coins||0;
+  bowPower=d.bowPower||18;
+  currentBow=d.currentBow||'Wooden Bow';
+  achievements=d.achievements||0;
+ }catch(e){}
+}
+loadGame();
+
+function toggleShop(){
+ const s=document.getElementById('shopMenu');
+ s.style.display=s.style.display==='block'?'none':'block';
+}
+
+function buyBow(cost,name){
+ if(coins<cost){ alert('Not enough coins!'); return; }
+ coins-=cost;
+ document.getElementById('coins').textContent=coins;
+ currentBow=name;
+
+ if(name==='Bronze Bow') bowPower=20;
+ if(name==='Silver Bow') bowPower=23;
+ if(name==='Gold Bow') bowPower=27;
+ if(name==='Diamond Bow') bowPower=32;
+
+ localStorage.setItem('archeryBow',name);
+ saveGame(); alert('Unlocked '+name);
+}
+function togglePause(){
+
+ gamePaused=!gamePaused;
+ document.getElementById('pauseMenu').style.display=gamePaused?'block':'none';
+}
+
+function resetGame(){
+ score=0;
+ misses=0;
+ level=1;
+ levelHits=0;
+ hitsNeeded=2;
+ target.speed=3;
+ target.radius=40;
+ gamePaused=false;
+ document.getElementById('pauseMenu').style.display='none';
+}
+
+function goToMenu(){
+ gameStarted=false;
+ gameEnded=false;
+ score=0;
+ misses=0;
+ level=1;
+ levelHits=0;
+ hitsNeeded=2;
+ document.getElementById("level").textContent=1;
+ document.getElementById("gameOver").style.display="none";
+ const s=document.getElementById("startScreen");
+ if(s) s.style.display="flex";
+}
+
+function loop(){
+
+
+ if(gameStarted && !gameEnded && !gamePaused) update();
+ draw();
+ requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
